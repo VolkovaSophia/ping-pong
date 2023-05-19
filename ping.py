@@ -12,11 +12,37 @@ class GameSprite(sprite.Sprite):
     def reset(self):
         window.blit(self.image, (self.rect.x, self.rect.y))
 
+    def update(self):
+        self.rect.x += self.speed
+        self.rect.y += self.speed
+
+class Player(GameSprite):
+        def __init__(self,image_name, x, y, speed, wight, height, side):
+            super().__init__(image_name, x, y, speed, wight, height)
+            self.side = side
+        def update(self):
+            keys = key.get_pressed()
+            k1 = K_UP
+            k2 = K_DOWN
+
+            if self.side == 'l':
+                k1 = K_w
+                k2 = K_s
+
+            if keys[k1] and self.rect.y >= 5:
+                self.rect.y -= self.speed
+            if keys[k2] and self.rect.y <= win_height - 150:
+                self.rect.y += self.speed
+
 bg = (200, 255, 255)
 win_width = 600
 win_height = 500
 window = display.set_mode((win_width, win_height))
 window.fill(bg)
+
+ball = GameSprite('tenis_ball.png', 200, 100, 2, 50, 50)
+racket1 = Player('racket.png', 30, 200, 4, 50, 150, 'l')
+racket2 = Player('racket.png', 520, 200, 4, 50, 150, 'r')
 
 game = True
 finish = False
@@ -27,6 +53,15 @@ while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
+
+    if not finish:
+        window.fill(bg)
+        ball.update()
+        ball.reset()
+        racket1.update()
+        racket2.update()
+        racket1.reset()
+        racket2.reset()
 
     display.update()
     clock.tick(FPS)
